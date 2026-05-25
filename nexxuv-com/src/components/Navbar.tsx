@@ -1,120 +1,101 @@
 import { useState, useEffect } from 'react';
-import { Cpu, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Shield } from 'lucide-react';
 
 interface NavbarProps {
-  onNavigate: (page: 'home' | 'booking' | 'admin') => void;
-  currentPage: string;
+  onAdminClick: () => void;
 }
 
-export default function Navbar({ onNavigate, currentPage }: NavbarProps) {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+const links = [
+  { label: 'Inicio', href: '#inicio' },
+  { label: 'Capacidades', href: '#capacidades' },
+  { label: 'Soluciones', href: '#soluciones' },
+  { label: 'Portafolio', href: '#portafolio' },
+  { label: 'Contacto', href: '#contacto' },
+];
+
+export default function Navbar({ onAdminClick }: NavbarProps) {
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const navLinks = [
-    { label: 'Inicio', page: 'home' as const },
-    { label: 'Servicios', page: 'home' as const, anchor: '#servicios' },
-    { label: 'Nosotros', page: 'home' as const, anchor: '#nosotros' },
-  ];
-
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-[#030712]/95 backdrop-blur-md border-b border-cyan-500/20 shadow-lg shadow-cyan-500/5' : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <button
-          onClick={() => onNavigate('home')}
-          className="flex items-center gap-2 group"
-        >
-          <div className="relative">
-            <Cpu className="w-7 h-7 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
-            <div className="absolute inset-0 bg-cyan-400/20 rounded blur-sm group-hover:bg-cyan-300/30 transition-all" />
+    <nav className="fixed top-0 left-0 right-0 z-50 glass">
+      <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
+        <a href="#inicio" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-lg bg-cyan-neon/10 border border-cyan-neon/30 flex items-center justify-center group-hover:bg-cyan-neon/20 transition-colors">
+            <span className="text-cyan-neon font-extrabold text-sm">NX</span>
           </div>
-          <span className="text-white font-bold text-xl tracking-widest">
-            NEX<span className="text-cyan-400">XUV</span>
-          </span>
-        </button>
+          <span className="text-white font-bold text-lg tracking-tight">NEXXUV</span>
+        </a>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => {
-                onNavigate(link.page);
-                if (link.anchor) {
-                  setTimeout(() => {
-                    document.querySelector(link.anchor!)?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }
-              }}
-              className="text-gray-400 hover:text-cyan-400 text-sm font-medium tracking-wider uppercase transition-colors duration-200"
+        <div className="hidden lg:flex items-center gap-8">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-slate-light/70 hover:text-cyan-neon text-sm font-medium transition-colors duration-200"
             >
-              {link.label}
-            </button>
+              {l.label}
+            </a>
           ))}
           <button
-            onClick={() => onNavigate('admin')}
-            className="text-gray-600 hover:text-gray-400 text-xs font-medium tracking-wider uppercase transition-colors duration-200 border border-gray-800 hover:border-gray-700 px-3 py-1.5 rounded"
+            onClick={onAdminClick}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-slate-light/60 hover:text-cyan-neon hover:border-cyan-neon/20 text-xs font-medium transition-all duration-200"
           >
-            Admin
-          </button>
-          <button
-            onClick={() => onNavigate('booking')}
-            className={`px-5 py-2 text-sm font-semibold tracking-wider uppercase rounded border transition-all duration-200 ${
-              currentPage === 'booking'
-                ? 'bg-cyan-400 text-gray-900 border-cyan-400'
-                : 'bg-transparent text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-gray-900'
-            }`}
-          >
-            Agendar Reunión
+            <Shield size={13} />
+            Acceso Administrador
           </button>
         </div>
 
-        {/* Mobile hamburger */}
         <button
-          className="md:hidden text-gray-400 hover:text-cyan-400 transition-colors"
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          aria-expanded={open}
+          className="lg:hidden text-slate-light p-2"
         >
-          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-[#030712]/98 backdrop-blur-md border-b border-cyan-500/20 px-6 py-4 flex flex-col gap-4">
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => {
-                setMenuOpen(false);
-                onNavigate(link.page);
-                if (link.anchor) {
-                  setTimeout(() => {
-                    document.querySelector(link.anchor!)?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }
-              }}
-              className="text-gray-400 hover:text-cyan-400 text-sm font-medium tracking-wider uppercase transition-colors text-left"
-            >
-              {link.label}
-            </button>
-          ))}
-          <button
-            onClick={() => { setMenuOpen(false); onNavigate('booking'); }}
-            className="w-full px-5 py-2 text-sm font-semibold tracking-wider uppercase rounded border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition-all"
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden glass border-t border-white/[0.04] overflow-hidden"
           >
-            Agendar Reunión
-          </button>
-        </div>
-      )}
+            <div className="px-6 py-4 flex flex-col gap-3">
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="text-slate-light/70 hover:text-cyan-neon text-sm font-medium py-3 transition-colors"
+                >
+                  {l.label}
+                </a>
+              ))}
+              <button
+                onClick={() => { setOpen(false); onAdminClick(); }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-slate-light/60 hover:text-cyan-neon text-xs font-medium transition-all mt-2 w-fit"
+              >
+                <Shield size={13} />
+                Acceso Administrador
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

@@ -1,27 +1,21 @@
-import { useState } from 'react';
-import Navbar from './components/Navbar';
-import Landing from './pages/Landing';
-import BookingForm from './pages/BookingForm';
-import AdminDashboard from './pages/AdminDashboard';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import LandingPage from './pages/LandingPage';
+import AdminPage from './pages/AdminPage';
 
-type Page = 'home' | 'booking' | 'admin';
+const queryClient = new QueryClient();
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-
-  function navigate(page: Page) {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
+function App() {
   return (
-    <div className="bg-[#030712] min-h-screen">
-      {currentPage !== 'admin' && (
-        <Navbar onNavigate={navigate} currentPage={currentPage} />
-      )}
-      {currentPage === 'home' && <Landing onNavigate={navigate} />}
-      {currentPage === 'booking' && <BookingForm onNavigate={navigate} />}
-      {currentPage === 'admin' && <AdminDashboard onNavigate={navigate} />}
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
+
+export default App;

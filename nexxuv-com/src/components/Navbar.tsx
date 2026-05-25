@@ -109,39 +109,23 @@ export default function Navbar({ onAdminClick }: NavbarProps) {
             ))}
           </div>
 
-          <button
-            onClick={() => setOpen(!open)}
-            aria-label={open ? "Cerrar menu" : "Abrir menu"}
-            aria-expanded={open}
-            className="lg:hidden text-slate-light p-2"
-          >
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden glass border-t border-white/[0.04] overflow-hidden"
+          <div className="lg:hidden relative">
+            <div className="text-slate-light p-2 bg-white/[0.03] border border-white/[0.08] rounded-lg flex items-center justify-center pointer-events-none">
+              <Menu size={22} />
+            </div>
+            <select
+              defaultValue="#inicio"
+              onChange={(e) => {
+                window.location.hash = e.target.value;
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 appearance-none cursor-pointer"
             >
-              <div className="px-6 py-4 flex flex-col gap-3">
-                {links.map((l) => (
-                  <a
-                    key={l.href}
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="text-slate-light/70 hover:text-cyan-neon text-sm font-medium py-3 transition-colors"
-                  >
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {links.map((l) => (
+                <option key={l.href} value={l.href}>{l.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </nav>
 
       <AnimatePresence>

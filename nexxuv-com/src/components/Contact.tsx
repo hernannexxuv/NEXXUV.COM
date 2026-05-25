@@ -11,7 +11,7 @@ interface ContactProps {
 const contactInfo = [
   { icon: Mail, label: 'contacto@nexxuv.com' },
   { icon: Phone, label: '+56 9 8753 5014' },
-  { icon: MapPin, label: 'Santiago, Chile' },
+  { icon: MapPin, label: 'Chile' },
 ];
 
 const sessionTypes = [

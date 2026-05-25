@@ -122,23 +122,39 @@ export default function Navbar({ onAdminClick }: NavbarProps) {
         <AnimatePresence>
           {open && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden glass border-t border-white/[0.04] overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm lg:hidden"
+              onClick={() => setOpen(false)}
             >
-              <div className="px-6 py-4 flex flex-col gap-3">
-                {links.map((l) => (
-                  <a
-                    key={l.href}
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="text-slate-light/70 hover:text-cyan-neon text-sm font-medium py-3 transition-colors"
-                  >
-                    {l.label}
-                  </a>
-                ))}
-              </div>
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                className="absolute bottom-0 left-0 right-0 bg-[#0a0f1e]/95 backdrop-blur-2xl border-t border-white/[0.06] rounded-t-3xl px-6 pb-10 pt-3"
+              >
+                {/* Handle bar */}
+                <div className="flex justify-center mb-6">
+                  <div className="w-10 h-1 rounded-full bg-white/[0.12]" />
+                </div>
+
+                <nav className="flex flex-col gap-1">
+                  {links.map((l) => (
+                    <a
+                      key={l.href}
+                      href={l.href}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center justify-center py-4 text-slate-light/70 hover:text-white text-base font-medium transition-colors rounded-xl hover:bg-white/[0.03] active:bg-white/[0.06]"
+                    >
+                      {l.label}
+                    </a>
+                  ))}
+                </nav>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

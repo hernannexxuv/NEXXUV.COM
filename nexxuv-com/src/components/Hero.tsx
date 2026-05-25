@@ -31,7 +31,7 @@ export default function Hero() {
           className="mt-4 sm:mt-6"
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-neon/[0.06] border border-cyan-neon/20 mb-8">
-            <div className="w-1.5 h-1.5 rounded-full bg-cyan-neon animate-pulse" />
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-tech animate-pulse" />
             <span className="text-cyan-neon text-xs font-medium tracking-wide uppercase">Ingeniería & Automatización B2B</span>
           </div>
         </motion.div>

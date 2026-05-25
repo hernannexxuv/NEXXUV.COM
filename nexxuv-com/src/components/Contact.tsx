@@ -165,7 +165,7 @@ export default function Contact({ selectedSession }: ContactProps) {
       </div>
 
       {/* Footer */}
-      <div className="mt-24 border-t border-white/[0.04] pt-8">
+      <div id="footer-content" className="mt-24 border-t border-white/[0.04] pt-8">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-md bg-cyan-neon/10 border border-cyan-neon/30 flex items-center justify-center">
@@ -173,7 +173,10 @@ export default function Contact({ selectedSession }: ContactProps) {
             </div>
             <span className="text-white/60 font-semibold text-sm">NEXXUV</span>
           </div>
-          <p className="text-slate-light/30 text-xs">&copy; 2026 NEXXUV. Ingeniería de Software y Automatización Estratégica.</p>
+          <div className="text-slate-light/30 text-xs text-center sm:text-right">
+            <span className="block sm:inline">&copy; 2026 NEXXUV.</span>
+            <span className="block sm:inline sm:ml-1">Ingeniería de Software y Automatización Estratégica.</span>
+          </div>
         </div>
       </div>
     </section>

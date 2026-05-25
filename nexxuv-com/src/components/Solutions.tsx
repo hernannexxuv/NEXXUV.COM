@@ -36,7 +36,7 @@ const colorMap: Record<string, { border: string; bg: string; text: string }> = {
 
 export default function Solutions() {
   return (
-    <section id="soluciones" className="relative py-24 sm:py-32 scroll-mt-[72px]">
+    <section id="soluciones" className="relative pt-4 pb-16 sm:pt-8 sm:pb-20 scroll-mt-[0px]">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

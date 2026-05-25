@@ -1,30 +1,17 @@
 import { motion } from 'framer-motion';
-import { X, Users, Calendar, TrendingUp, BarChart3, Settings, Bell, LogOut, Home, Layers, Clock } from 'lucide-react';
+import { X, Users, Calendar, TrendingUp, BarChart3, Settings, Bell, LogOut, Home, Layers, Clock, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const stats = [
-  { label: 'Visitas esta semana', value: '1,284', change: '+12.3%', icon: Users },
-  { label: 'Sesiones agendadas', value: '38', change: '+8.1%', icon: Calendar },
-  { label: 'Tasa de conversión', value: '23.7%', change: '+2.4%', icon: TrendingUp },
-  { label: 'Ingresos del mes', value: '$4.2M', change: '+18.6%', icon: BarChart3 },
-];
+import { useBookings, useUpdateBookingStatus } from '../features/bookings/hooks';
 
 type EstadoSesion = 'Confirmada' | 'Pendiente' | 'Reagendada';
 
-interface Session {
-  cliente: string;
-  tipo: string;
-  fecha: string;
-  estado: EstadoSesion;
+function normalizeStatus(dbStatus: string | undefined): EstadoSesion {
+  if (!dbStatus) return 'Pendiente';
+  const normalized = dbStatus.toLowerCase();
+  if (normalized === 'confirmada' || normalized === 'confirmed') return 'Confirmada';
+  if (normalized === 'reagendada' || normalized === 'rescheduled') return 'Reagendada';
+  return 'Pendiente';
 }
-
-const upcomingSessions: Session[] = [
-  { cliente: 'Municipalidad de Santiago', tipo: 'Arquitectura de Plataformas', fecha: '28 May 2026', estado: 'Confirmada' },
-  { cliente: 'Tribunal de Juicio Oral', tipo: 'Automatización de Procesos', fecha: '29 May 2026', estado: 'Pendiente' },
-  { cliente: 'TVOGPS Corp.', tipo: 'Integración Middleware', fecha: '30 May 2026', estado: 'Confirmada' },
-  { cliente: 'Ministerio de Justicia', tipo: 'Consultoría Técnica', fecha: '1 Jun 2026', estado: 'Reagendada' },
-  { cliente: 'RSVgps Ltda.', tipo: 'Integración Middleware', fecha: '3 Jun 2026', estado: 'Confirmada' },
-];
 
 const sidebarLinks = [
   { icon: Home, label: 'Dashboard' },
@@ -43,6 +30,21 @@ const statusColor: Record<EstadoSesion, string> = {
 
 export default function AdminPage() {
   const navigate = useNavigate();
+  const { data: bookings = [], isLoading, isError } = useBookings();
+  const updateStatus = useUpdateBookingStatus();
+
+  const totalBookings = bookings.length;
+  const pendingBookings = bookings.filter(b => normalizeStatus(b.status) === 'Pendiente').length;
+  const confirmedBookings = bookings.filter(b => normalizeStatus(b.status) === 'Confirmada').length;
+  const rescheduledBookings = bookings.filter(b => normalizeStatus(b.status) === 'Reagendada').length;
+
+  const stats = [
+    { label: 'Total Solicitudes', value: totalBookings.toString(), change: 'En tiempo real', icon: Layers },
+    { label: 'Sesiones Confirmadas', value: confirmedBookings.toString(), change: 'Activas', icon: Calendar },
+    { label: 'Sesiones Pendientes', value: pendingBookings.toString(), change: 'Por revisar', icon: Clock },
+    { label: 'Sesiones Reagendadas', value: rescheduledBookings.toString(), change: 'Ajustadas', icon: TrendingUp },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -117,37 +119,75 @@ export default function AdminPage() {
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
             <h3 className="text-white font-semibold text-sm">Próximas Sesiones Agendadas</h3>
-            <span className="text-slate-light/30 text-xs">{upcomingSessions.length} sesiones</span>
+            <span className="text-slate-light/30 text-xs">{bookings.length} sesiones</span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/[0.04]">
-                  <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Cliente</th>
-                  <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Tipo de Sesión</th>
-                  <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Fecha</th>
-                  <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {upcomingSessions.map((s) => (
-                  <tr key={`${s.cliente}-${s.fecha}`} className="border-b border-white/[0.03] last:border-0 hover:bg-white/[0.015] transition-colors">
-                    <td className="px-5 py-3.5 text-white font-medium">{s.cliente}</td>
-                    <td className="px-5 py-3.5 text-slate-light/60 flex items-center gap-2">
-                      <Clock size={13} className="text-cyan-neon/40" />
-                      {s.tipo}
-                    </td>
-                    <td className="px-5 py-3.5 text-slate-light/60">{s.fecha}</td>
-                    <td className="px-5 py-3.5">
-                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium border ${statusColor[s.estado]}`}>
-                        {s.estado}
-                      </span>
-                    </td>
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <div className="w-6 h-6 border-2 border-white/10 border-t-cyan-neon rounded-full animate-spin" />
+                <p className="text-slate-light/40 text-xs">Cargando sesiones...</p>
+              </div>
+            ) : isError ? (
+              <div className="text-center py-12 text-red-400 text-sm">
+                Error al conectar con Supabase. Por favor verifica las credenciales.
+              </div>
+            ) : bookings.length === 0 ? (
+              <div className="text-center py-12 text-slate-light/40 text-sm">
+                Aún no hay sesiones agendadas.
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/[0.04]">
+                    <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Cliente</th>
+                    <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Tipo de Sesión</th>
+                    <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Fecha de Creación</th>
+                    <th className="text-left px-5 py-3 text-slate-light/40 font-medium text-xs uppercase tracking-wider">Estado</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {bookings.map((s) => (
+                    <tr key={s.id} className="border-b border-white/[0.03] last:border-0 hover:bg-white/[0.015] transition-colors">
+                      <td className="px-5 py-3.5">
+                        <div className="text-white font-medium">{s.name}</div>
+                        <div className="text-slate-light/40 text-xs flex items-center gap-1.5 mt-0.5">
+                          <Mail size={11} className="text-cyan-neon/30" />
+                          {s.email}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-light/60">
+                        <div className="flex items-center gap-2">
+                          <Clock size={13} className="text-cyan-neon/40" />
+                          {s.session_type}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-light/60">
+                        {new Date(s.created_at).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <select
+                          value={normalizeStatus(s.status)}
+                          onChange={(e) => updateStatus.mutate({ id: s.id, status: e.target.value.toLowerCase() })}
+                          disabled={updateStatus.isPending}
+                          className={`bg-transparent border border-white/[0.06] rounded-lg px-2.5 py-1 text-xs font-medium focus:outline-none cursor-pointer transition-colors ${
+                            statusColor[normalizeStatus(s.status)]
+                          }`}
+                        >
+                          <option value="Pendiente" className="bg-[#0a0f1e] text-slate-light">Pendiente</option>
+                          <option value="Confirmada" className="bg-[#0a0f1e] text-slate-light">Confirmada</option>
+                          <option value="Reagendada" className="bg-[#0a0f1e] text-slate-light">Reagendada</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </main>

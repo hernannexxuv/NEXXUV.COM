@@ -44,7 +44,7 @@ export default function Portfolio({ onBookSession }: PortfolioProps) {
   };
 
   return (
-    <section id="portafolio" className="relative py-24 sm:py-32 scroll-mt-[72px]">
+    <section id="portafolio" className="relative pt-4 pb-16 sm:pt-8 sm:pb-20 scroll-mt-[0px]">
       <div className="absolute inset-0 bg-radial-glow opacity-50" />
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <motion.div

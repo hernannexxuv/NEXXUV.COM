@@ -51,7 +51,7 @@ export default function Contact({ selectedSession }: ContactProps) {
   };
 
   return (
-    <section id="contacto" className="relative py-24 sm:py-32">
+    <section id="contacto" className="relative pt-4 pb-16 sm:pt-8 sm:pb-20 scroll-mt-[0px]">
       <div className="absolute inset-0 bg-radial-glow opacity-30" />
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">

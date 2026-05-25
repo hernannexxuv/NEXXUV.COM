@@ -26,7 +26,7 @@ const capabilities = [
 
 export default function Capabilities() {
   return (
-    <section id="capacidades" className="relative py-24 sm:py-32">
+    <section id="capacidades" className="relative pt-4 pb-16 sm:pt-8 sm:pb-20 scroll-mt-[0px]">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

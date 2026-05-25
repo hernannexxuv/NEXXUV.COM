@@ -1,12 +1,24 @@
 import { motion } from 'framer-motion';
+import { useRef } from 'react';
 import GlowButton from './GlowButton';
 import { ArrowRight, CalendarCheck } from 'lucide-react';
+import { useCircuitAnimation } from './animations/useCircuitAnimation';
 
 export default function Hero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useCircuitAnimation(canvasRef);
+
   return (
     <section id="inicio" className="relative min-h-screen flex items-center justify-center pt-[72px] sm:pt-[84px] overflow-hidden scroll-mt-[72px]">
       <div className="absolute inset-0 bg-grid" />
       <div className="absolute inset-0 bg-radial-glow" />
+
+      {/* Circuit animation canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{ opacity: 0.45 }}
+      />
 
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-neon/[0.03] rounded-full blur-[120px]" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-tech/[0.03] rounded-full blur-[120px]" />

@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import MagicBorderCard from './MagicBorderCard';
 import GlowButton from './GlowButton';
@@ -39,8 +40,28 @@ const sessions = [
 ];
 
 export default function Portfolio({ onBookSession }: PortfolioProps) {
+  const [buildingClicks, setBuildingClicks] = useState(0);
+  const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleBook = (sessionType: string) => () => {
     onBookSession(sessionType);
+  };
+
+  const handleIconClick = (title: string) => {
+    if (title === 'Arquitectura de Plataformas: Soluciones Institucionales') {
+      setBuildingClicks((prev) => {
+        const newCount = prev + 1;
+        if (newCount === 3) {
+          window.open('https://vecino-digital-demo.pages.dev/dideco', '_blank');
+          return 0;
+        }
+        
+        if (clickTimeout.current) clearTimeout(clickTimeout.current);
+        clickTimeout.current = setTimeout(() => setBuildingClicks(0), 1000);
+        
+        return newCount;
+      });
+    }
   };
 
   return (
@@ -68,7 +89,10 @@ export default function Portfolio({ onBookSession }: PortfolioProps) {
             <MagicBorderCard key={s.title} delay={i * 0.1}>
               <div className="flex flex-col h-full">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-11 h-11 rounded-lg bg-cyan-neon/10 border border-cyan-neon/20 flex items-center justify-center">
+                  <div 
+                    className={`w-11 h-11 rounded-lg bg-cyan-neon/10 border border-cyan-neon/20 flex items-center justify-center ${s.title === 'Arquitectura de Plataformas: Soluciones Institucionales' ? 'cursor-pointer' : ''}`}
+                    onClick={() => handleIconClick(s.title)}
+                  >
                     <s.icon size={20} className="text-cyan-neon" />
                   </div>
                   <span className="flex items-center gap-1.5 text-emerald-tech text-xs font-medium bg-emerald-tech/10 px-3 py-1 rounded-full border border-emerald-tech/20">

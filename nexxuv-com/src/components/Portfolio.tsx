@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import MagicBorderCard from './MagicBorderCard';
 import GlowButton from './GlowButton';
@@ -40,7 +40,7 @@ const sessions = [
 ];
 
 export default function Portfolio({ onBookSession }: PortfolioProps) {
-  const [, setBuildingClicks] = useState(0);
+  const clickCount = useRef(0);
   const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleBook = (sessionType: string) => () => {
@@ -49,18 +49,18 @@ export default function Portfolio({ onBookSession }: PortfolioProps) {
 
   const handleIconClick = (title: string) => {
     if (title === 'Arquitectura de Plataformas: Soluciones Institucionales') {
-      setBuildingClicks((prev) => {
-        const newCount = prev + 1;
-        if (newCount === 3) {
-          window.open('https://vecino-digital-demo.pages.dev/dideco', '_blank');
-          return 0;
-        }
-        
+      clickCount.current += 1;
+      
+      if (clickCount.current === 3) {
+        window.open('https://vecino-digital-demo.pages.dev/dideco', '_blank');
+        clickCount.current = 0;
         if (clickTimeout.current) clearTimeout(clickTimeout.current);
-        clickTimeout.current = setTimeout(() => setBuildingClicks(0), 2000);
-        
-        return newCount;
-      });
+      } else {
+        if (clickTimeout.current) clearTimeout(clickTimeout.current);
+        clickTimeout.current = setTimeout(() => {
+          clickCount.current = 0;
+        }, 2000);
+      }
     }
   };
 

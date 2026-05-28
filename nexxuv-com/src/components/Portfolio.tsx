@@ -40,7 +40,7 @@ const sessions = [
 ];
 
 export default function Portfolio({ onBookSession }: PortfolioProps) {
-  const [buildingClicks, setBuildingClicks] = useState(0);
+  const [, setBuildingClicks] = useState(0);
   const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleBook = (sessionType: string) => () => {
@@ -57,7 +57,7 @@ export default function Portfolio({ onBookSession }: PortfolioProps) {
         }
         
         if (clickTimeout.current) clearTimeout(clickTimeout.current);
-        clickTimeout.current = setTimeout(() => setBuildingClicks(0), 1000);
+        clickTimeout.current = setTimeout(() => setBuildingClicks(0), 2000);
         
         return newCount;
       });

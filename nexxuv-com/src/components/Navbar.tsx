@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Lock } from 'lucide-react';
+import { Menu, Lock } from 'lucide-react';
 
 interface NavbarProps {
   onAdminClick: () => void;
@@ -17,8 +17,7 @@ const links = [
 const ADMIN_PASSWORD = 'nexxuv2026';
 
 export default function Navbar({ onAdminClick }: NavbarProps) {
-  const [open, setOpen] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
+  const [, setClickCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -28,7 +27,6 @@ export default function Navbar({ onAdminClick }: NavbarProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpen(false);
         setShowModal(false);
         setPassword('');
         setPasswordError('');
